@@ -5,6 +5,16 @@
 Este projeto tem como objetivo o desenvolvimento de um **Sistema de Batalha Pokémon** executado em um **sistema embarcado**, com funcionamento local entre jogadores, realizando batalhas entre seus Pokémons.
 
 ---
+
+## Contribuidores
+
+- [Gustavo Pivoto Ambrósio](https://github.com/GustavoPivoto)
+- [Maria Clara Pereira Campos](https://github.com/Mariaclarapcampos)
+- [Patrick Augusto Lins de Oliveira Damião](https://github.com/Pack0042)
+- [Pedro Henrique de Paula Andrade](https://github.com/phandrad3)
+
+---
+
 ## Índice
 
 - [Visão Geral da Aplicação](#visão-geral-da-aplicação)
