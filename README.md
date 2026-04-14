@@ -18,7 +18,6 @@ O sistema representa a simulação de uma **batalha Pokémon**, sendo responsáv
 
 Seu funcionamento envolve:
 
-- autenticação dos jogadores;
 - seleção e utilização de Pokémons;
 - execução das batalhas com substituição de Pokémons durante o combate;
 - definição do vencedor ao derrotar todos os Pokémons do adversário;
