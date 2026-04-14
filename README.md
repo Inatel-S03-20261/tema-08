@@ -33,10 +33,10 @@ A batalha ocorre entre dois jogadores, onde cada um seleciona um Pokémon para o
 
 ### Diagrama de Caso de Uso
 
-![Diagrama de Caso de Uso](./docs/uml/use-case-diagram.png)
+![Diagrama de Caso de Uso](./docs/uml/use-case-diagram.drawio.png)
 
 ---
 
 ### Diagrama de Classes
 
-![Diagrama de Classes](./docs/uml/class-diagram.png)
+![Diagrama de Classes](./docs/uml/class-diagram.drawio.png)
