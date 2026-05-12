@@ -48,4 +48,4 @@ A batalha ocorre entre dois jogadores, onde cada um seleciona um Pokémon para o
 
 ### Diagrama de Classes
 
-![Diagrama de Classes](./docs/uml/class-diagram.drawio.png)
+![Diagrama de Classes](./docs/uml/solid-class-diagram.drawio.png)
