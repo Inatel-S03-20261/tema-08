@@ -49,9 +49,22 @@
 
 #define DISPLAY_TIME 5000
 
+/* Boot sequence defines */
+#define BOOT_LOGIN_TIME    3000
+#define BOOT_BG_TIME       2000
+#define BOOT_TRAINER_TIME  2000
+#define BOOT_LOAD_TIME     2000
+
 /* Private macros ----------------------------------------------------------- */
 
 /* Private typedefs --------------------------------------------------------- */
+enum BootState {
+  BOOT_LOGIN = 0,
+  BOOT_BACKGROUND,
+  BOOT_TRAINER,
+  BOOT_LOADING,
+  BOOT_COMPLETE
+};
 
 /* Private constants -------------------------------------------------------- */
 
@@ -61,6 +74,11 @@ TFT_eSPI tft = TFT_eSPI();
 int currentIdx  = 0;
 unsigned long lastSwitch = 0;
 
+/* Boot sequence variables */
+BootState bootState = BOOT_LOGIN;
+unsigned long bootStateTime = 0;
+bool bootComplete = false;
+
 
 /* Private function prototypes ---------------------------------------------- */
 uint16_t type_color(const char *type);
@@ -68,6 +86,10 @@ uint16_t move_color(const char *category);
 void draw_statBar(int x, int y, int w, int h, int val, int maxVal, uint16_t color, const char *label);
 void draw_typeBadge(int x, int y, const char *type);
 void display_pokemon(const char *folder, Pokemon &p);
+
+/* Boot sequence function prototypes */
+void show_bootScreen();
+void update_bootSequence();
 
 /* Public functions --------------------------------------------------------- */
 void setup() {
@@ -79,21 +101,14 @@ void setup() {
   tft.fillScreen(TFT_BLACK);
 
   tft.setTextColor(C_GOLD);
-  tft.drawString("PokeBattle", 90, 90, 4);
-  tft.setTextColor(C_TEXT);
-  tft.drawString("Iniciando SD...", 90, 130, 2);
+  tft.drawString("Iniciando...", 100, 115, 2);
 
   if(!SD_init()) {
     tft.setTextColor(TFT_RED);
-    tft.drawString("SD falhou!", 90, 160, 2);
+    tft.drawString("Erro no SD!", 100, 140, 2);
     Serial.println("SD falhou!");
     while(true) delay(1000);
   }
-
-  tft.setTextColor(C_HP_GREEN);
-  tft.drawString("SD OK!", 90, 160, 2);
-  Serial.println("SD OK!");
-  delay(800);
 
   scan_pokemonsOnSD();
 
@@ -104,9 +119,21 @@ void setup() {
     tft.drawString("encontrado no SD!", 50, 125, 2);
     while (true) delay(1000);
   }
+
+  /* Initialize boot sequence */
+  bootState = BOOT_LOGIN;
+  bootStateTime = millis();
+  bootComplete = false;
 }
 
 void loop() {
+  /* Handle boot sequence */
+  if(!bootComplete) {
+    update_bootSequence();
+    return;
+  }
+
+  /* Normal gameplay loop */
   if(millis() - lastSwitch >= DISPLAY_TIME || lastSwitch == 0) {
     lastSwitch = millis();
 
@@ -229,4 +256,120 @@ void display_pokemon(const char *folder, Pokemon &p) {
   }
 
   tft.fillRect(0, 238, 320, 2, C_GOLD);
+}
+
+/* Boot sequence functions ------------------------------------------------- */
+void show_bootScreen() {
+  unsigned long elapsed = millis() - bootStateTime;
+
+  switch(bootState) {
+    case BOOT_LOGIN: {
+      /* Show login screen */
+      if(elapsed == 0) {
+        tft.fillScreen(TFT_BLACK);
+        draw_jpegFromSD("/components/login.jpg", 0, 0);
+        Serial.println("Boot: Exibindo tela de login...");
+      }
+      break;
+    }
+
+    case BOOT_BACKGROUND: {
+      /* Show background */
+      if(elapsed == 0) {
+        tft.fillScreen(TFT_BLACK);
+        draw_jpegFromSD("/components/background.jpg", 0, 0);
+        Serial.println("Boot: Exibindo background...");
+      }
+      break;
+    }
+
+    case BOOT_TRAINER: {
+      /* Show trainer selection */
+      if(elapsed == 0) {
+        tft.fillScreen(TFT_BLACK);
+        draw_jpegFromSD("/components/trainer_1.jpg", 0, 0);
+        Serial.println("Boot: Exibindo treinador...");
+      }
+      break;
+    }
+
+    case BOOT_LOADING: {
+      /* Show loading screen with status */
+      if(elapsed == 0) {
+        tft.fillScreen(C_BG);
+        draw_jpegFromSD("/components/pick.jpg", 0, 0);
+        Serial.println("Boot: Carregando pokémons...");
+      }
+      
+      /* Show loading progress */
+      tft.setTextColor(C_GOLD);
+      tft.drawString("Carregando", 120, 100, 2);
+      
+      int dots = (elapsed / 300) % 4;
+      char loadBuf[20];
+      snprintf(loadBuf, sizeof(loadBuf), "%-3s", "...");
+      if(dots > 0) tft.drawString(loadBuf, 180, 100, 2);
+      
+      break;
+    }
+
+    case BOOT_COMPLETE: {
+      /* Boot complete, no need to draw */
+      break;
+    }
+  }
+}
+
+void update_bootSequence() {
+  unsigned long elapsed = millis() - bootStateTime;
+  unsigned long requiredTime = 0;
+
+  switch(bootState) {
+    case BOOT_LOGIN:
+      requiredTime = BOOT_LOGIN_TIME;
+      if(elapsed < requiredTime) {
+        show_bootScreen();
+      } else {
+        bootState = BOOT_BACKGROUND;
+        bootStateTime = millis();
+      }
+      break;
+
+    case BOOT_BACKGROUND:
+      requiredTime = BOOT_BG_TIME;
+      if(elapsed < requiredTime) {
+        show_bootScreen();
+      } else {
+        bootState = BOOT_TRAINER;
+        bootStateTime = millis();
+      }
+      break;
+
+    case BOOT_TRAINER:
+      requiredTime = BOOT_TRAINER_TIME;
+      if(elapsed < requiredTime) {
+        show_bootScreen();
+      } else {
+        bootState = BOOT_LOADING;
+        bootStateTime = millis();
+      }
+      break;
+
+    case BOOT_LOADING:
+      requiredTime = BOOT_LOAD_TIME;
+      if(elapsed < requiredTime) {
+        show_bootScreen();
+      } else {
+        bootState = BOOT_COMPLETE;
+        bootComplete = true;
+        currentIdx = 0;
+        lastSwitch = millis();
+        Serial.println("Boot: Sequencia completa! Iniciando jogo...");
+      }
+      break;
+
+    case BOOT_COMPLETE:
+      bootComplete = true;
+      break;
+  }
 }
