@@ -1,0 +1,9 @@
+# Simulador Wokwi (extensao VS Code). Display ILI9341 + cartao microSD + serial.
+# Conteudo do SD: os arquivos da pasta ./sdcard (pokemons + components).
+# Como prover o conteudo do SD no Wokwi: ao iniciar a simulacao, use a aba
+# "SD Card" do simulador para carregar os arquivos de ./sdcard (o Wokwi nao
+# tem opcao em arquivo de config para isso). Entrada pelo terminal: a/d/s/w.
+[wokwi]
+version = 1
+firmware = '.pio/build/esp32dev/firmware.bin'
+elf = '.pio/build/esp32dev/firmware.elf'

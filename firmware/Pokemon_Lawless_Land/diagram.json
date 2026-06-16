@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "author": "Tema 08 - Pokemon Lawless Land",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "board-ili9341-cap-touch", "id": "lcd", "top": -40, "left": 230, "rotate": 90, "attrs": {} },
+    { "type": "wokwi-microsd-card", "id": "sd", "top": 180, "left": 250, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+
+    [ "lcd:VCC", "esp:3V3", "red", [] ],
+    [ "lcd:GND", "esp:GND.1", "black", [] ],
+    [ "lcd:CS", "esp:D15", "green", [] ],
+    [ "lcd:RST", "esp:D4", "orange", [] ],
+    [ "lcd:D/C", "esp:D2", "blue", [] ],
+    [ "lcd:MOSI", "esp:D23", "violet", [] ],
+    [ "lcd:SCK", "esp:D18", "yellow", [] ],
+    [ "lcd:MISO", "esp:D19", "gray", [] ],
+
+    [ "sd:VCC", "esp:3V3", "red", [] ],
+    [ "sd:GND", "esp:GND.2", "black", [] ],
+    [ "sd:SCK", "esp:D18", "yellow", [] ],
+    [ "sd:DI", "esp:D23", "violet", [] ],
+    [ "sd:DO", "esp:D19", "gray", [] ],
+    [ "sd:CS", "esp:D5", "green", [] ]
+  ]
+}
